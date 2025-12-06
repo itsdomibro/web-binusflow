@@ -14,12 +14,7 @@ export default function SearchBar() {
 
       {/* RIGHT */}
       <div className="flex items-center gap-2">
-        <Button variant="outline" size="icon" aria-label="add">
-          <CirclePlus />
-        </Button>
-        <Button variant="outline" size="icon" aria-label="remove">
-          <Trash2 />
-        </Button>
+
       </div>
     </nav>
   );
