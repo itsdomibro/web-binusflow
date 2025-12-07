@@ -17,13 +17,13 @@ import Image from "next/image";
 
 const items = [
   {
-    title: "Dashboard",
-    url: "/dashboard",
+    title: "Tasks",
+    url: "/",
     icon: LayoutDashboard,
   },
   {
-    title: "Configuration",
-    url: "/configuration",
+    title: "Colors",
+    url: "/colors",
     icon: Settings,
   },
 ];

@@ -1,43 +1,31 @@
+import {
+  createColorSchema,
+  updateColorSchema,
+  ColorBaseType,
+  CreateColorType,
+  UpdateColorType,
+} from "@/schemas/colorSchema";
+import {
+  taskCreateSchema,
+  taskUpdateSchema,
+  TaskBaseType,
+  TaskCreateType,
+  TaskUpdateType,
+} from "@/schemas/taskSchema";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
-type TaskStatus = "to_do" | "in_progress" | "done";
-
-type Task = {
-  id: string;
-  title: string;
-  description: string;
-  status: TaskStatus;
-  color: string;
-};
-
-type Color = {
-  id: string;
-  color: string;
-};
-
 type AppState = {
-  tasks: Task[];
-  colors: Color[];
+  tasks: TaskBaseType[];
+  colors: ColorBaseType[];
 
-  addTask: (
-    title: string,
-    description: string,
-    status: TaskStatus,
-    colorId: string
-  ) => void;
-  editTask: (
-    id: string,
-    title?: string,
-    description?: string,
-    status?: TaskStatus,
-    colorId?: string
-  ) => void;
-  removeTask: (id: string) => void;
+  createTask: (data: TaskCreateType) => void;
+  updateTask: (id: string, data: TaskUpdateType) => void;
+  deleteTask: (id: string) => void;
 
-  addColor: (color: string) => void;
-  editColor: (id: string, color: string) => void;
-  removeColor: (id: string) => void;
+  createColor: (data: CreateColorType) => void;
+  updateColor: (id: string, data: UpdateColorType) => void;
+  deleteColor: (id: string) => void;
 };
 
 export const useAppStore = create<AppState>()(
@@ -46,57 +34,57 @@ export const useAppStore = create<AppState>()(
       tasks: [],
       colors: [],
 
-      addTask: (title, description, status, colorId) =>
-        set((state) => ({
-          tasks: [
-            ...state.tasks,
-            {
-              id: crypto.randomUUID(),
-              title,
-              description,
-              status,
-              color: colorId,
-            },
-          ],
-        })),
+      createTask: (data) =>
+        set((state) => {
+          const parsed = taskCreateSchema.parse(data);
+          const newTask: TaskBaseType = {
+            ...parsed,
+            id: crypto.randomUUID(),
+            status: "notStarted",
+          };
+          return { tasks: [...state.tasks, newTask] };
+        }),
 
-      editTask: (id, title, description, status, colorId) =>
-        set((state) => ({
-          tasks: state.tasks.map((t) =>
-            t.id === id
-              ? {
-                  ...t,
-                  title: title ?? t.title,
-                  description: description ?? t.description,
-                  status: status ?? t.status,
-                  color: colorId ?? t.color,
-                }
-              : t
-          ),
-        })),
+      updateTask: (id, data) =>
+        set((state) => {
+          const parsed = taskUpdateSchema.parse(data);
+          return {
+            tasks: state.tasks.map((t) =>
+              t.id === id ? { ...t, ...parsed } : t
+            ),
+          };
+        }),
 
-      removeTask: (id) =>
+      deleteTask: (id) =>
         set((state) => ({
           tasks: state.tasks.filter((t) => t.id !== id),
         })),
 
-      addColor: (color) =>
-        set((state) => ({
-          colors: [...state.colors, { id: crypto.randomUUID(), color }],
-        })),
+      createColor: (data) =>
+        set((state) => {
+          const parsed = createColorSchema.parse(data);
+          const newColor: ColorBaseType = {
+            ...parsed,
+            id: crypto.randomUUID(),
+          };
+          return { colors: [...state.colors, newColor] };
+        }),
 
-      editColor: (id, color) =>
-        set((state) => ({
-          colors: state.colors.map((c) => (c.id === id ? { ...c, color } : c)),
-        })),
+      updateColor: (id, data) =>
+        set((state) => {
+          const parsed = updateColorSchema.parse(data);
+          return {
+            colors: state.colors.map((c) =>
+              c.id === id ? { ...c, ...parsed } : c
+            ),
+          };
+        }),
 
-      removeColor: (id) =>
+      deleteColor: (id) =>
         set((state) => ({
           colors: state.colors.filter((c) => c.id !== id),
         })),
     }),
-    {
-      name: "task-app-storage",
-    }
+    { name: "task-app-storage" }
   )
 );

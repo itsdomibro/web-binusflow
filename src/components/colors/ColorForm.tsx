@@ -2,7 +2,7 @@
 
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { colorSchema, ColorFormValues } from "@/schemas/colorSchema";
+import { createColorSchema, CreateColorType } from "@/schemas/colorSchema";
 import { useAppStore } from "@/store/appStore";
 import {
   Form,
@@ -16,21 +16,22 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 
 export function ColorForm({ onClose }: { onClose: () => void }) {
-  const addColor = useAppStore((s) => s.addColor);
-  const form = useForm<ColorFormValues>({
-    resolver: zodResolver(colorSchema),
+  const { createColor } = useAppStore();
+
+  const form = useForm<CreateColorType>({
+    resolver: zodResolver(createColorSchema),
     defaultValues: { color: "#000000" },
   });
 
+  const onSubmit = (data: CreateColorType) => {
+    createColor(data);
+    onClose();
+    form.reset();
+  };
+
   return (
     <Form {...form}>
-      <form
-        onSubmit={form.handleSubmit((data) => {
-          addColor(data.color);
-          onClose();
-        })}
-        className="space-y-6"
-      >
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
         <FormField
           control={form.control}
           name="color"

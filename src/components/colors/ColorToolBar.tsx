@@ -5,7 +5,7 @@ import { ColorDialog } from "./ColorDialog";
 
 export function ColorToolBar() {
   return (
-    <div className="w-full px-3 flex justify-between items-center">
+    <div className="w-full flex justify-between items-center">
       {/* LEFT TOOL */}
       <div>
         <Input type="text" placeholder="Search tasks..." />

@@ -5,8 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Trash2 } from "lucide-react";
 
 export function ColorList() {
-  const colors = useAppStore((s) => s.colors);
-  const removeColor = useAppStore((s) => s.removeColor);
+  const { colors, deleteColor } = useAppStore();
 
   if (colors.length === 0) {
     return <p className="text-muted-foreground">No colors yet.</p>;
@@ -28,7 +27,7 @@ export function ColorList() {
           <Button
             variant="ghost"
             size="icon"
-            onClick={() => removeColor(c.id)}
+            onClick={() => deleteColor(c.id)}
             aria-label="delete"
           >
             <Trash2 className="w-4 h-4" />

@@ -3,9 +3,9 @@
 import { ColorList } from "@/components/colors/ColorList";
 import { ColorToolBar } from "@/components/colors/ColorToolBar";
 
-export default function ConfigurationPage() {
+export default function ColorsPage() {
   return (
-    <div className="w-full flex flex-col justify-start items-center gap-2">
+    <div className="border border-black flex flex-col justify-start gap-1">
       <ColorToolBar />
       <ColorList />
     </div>

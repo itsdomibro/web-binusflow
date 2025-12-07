@@ -13,26 +13,28 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { CirclePlus } from "lucide-react";
-import { ColorForm } from "./ColorForm";
+import { TaskForm } from "./TaskForm";
 
-export function ColorDialog() {
+export default function TaskDialog() {
   const [open, setOpen] = useState(false);
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant="outline" size="icon" aria-label="add">
+        <Button variant="outline" size="icon" aria-label="add-task">
           <CirclePlus />
         </Button>
       </DialogTrigger>
 
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Create a Color</DialogTitle>
-          <DialogDescription>Let's make a new color</DialogDescription>
+          <DialogTitle>Create a Task</DialogTitle>
+          <DialogDescription>
+            Fill in the details to add a new task
+          </DialogDescription>
         </DialogHeader>
 
-        <ColorForm onClose={() => setOpen(false)} />
+        <TaskForm onClose={() => setOpen(false)} />
 
         <DialogFooter>
           <DialogClose asChild>
