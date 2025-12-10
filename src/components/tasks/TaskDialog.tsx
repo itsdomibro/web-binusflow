@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import {
   Dialog,
   DialogTrigger,
@@ -12,29 +11,44 @@ import {
   DialogClose,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { CirclePlus } from "lucide-react";
 import { TaskForm } from "./TaskForm";
+import { TaskBaseType } from "@/schemas/taskSchema";
+import { useState } from "react";
 
-export default function TaskDialog() {
-  const [open, setOpen] = useState(false);
+type TaskDialogProps = {
+  task?: TaskBaseType;
+  trigger?: React.ReactNode; // optional when controlled
+  open?: boolean; // optional
+  onOpenChange?: (open: boolean) => void; // optional
+};
+
+export default function TaskDialog({
+  task,
+  trigger,
+  open,
+  onOpenChange,
+}: TaskDialogProps) {
+  const [internalOpen, setInternalOpen] = useState(false);
+  const isControlled = open !== undefined && onOpenChange !== undefined;
+
+  const dialogOpen = isControlled ? open : internalOpen;
+  const handleOpenChange = isControlled ? onOpenChange! : setInternalOpen;
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        <Button variant="outline" size="icon" aria-label="add-task">
-          <CirclePlus />
-        </Button>
-      </DialogTrigger>
+    <Dialog open={dialogOpen} onOpenChange={handleOpenChange}>
+      {trigger && <DialogTrigger asChild>{trigger}</DialogTrigger>}
 
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Create a Task</DialogTitle>
+          <DialogTitle>{task ? "Edit Task" : "Create a Task"}</DialogTitle>
           <DialogDescription>
-            Fill in the details to add a new task
+            {task
+              ? "Update the details of your task"
+              : "Fill in the details to add a new task"}
           </DialogDescription>
         </DialogHeader>
 
-        <TaskForm onClose={() => setOpen(false)} />
+        <TaskForm task={task} onClose={() => handleOpenChange(false)} />
 
         <DialogFooter>
           <DialogClose asChild>

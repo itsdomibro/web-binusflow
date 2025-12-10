@@ -3,6 +3,7 @@ import z from "zod";
 export const colorBaseSchema = z.object({
   id: z.string(),
   color: z.string().min(1, "Color is required"),
+  label: z.string().min(1, "Label is required"),
 });
 
 export const createColorSchema = colorBaseSchema.omit({

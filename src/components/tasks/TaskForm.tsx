@@ -2,7 +2,13 @@
 
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { taskCreateSchema, TaskCreateType } from "@/schemas/taskSchema";
+import {
+  taskCreateSchema,
+  TaskCreateType,
+  taskBaseSchema,
+  TaskUpdateType,
+  TaskBaseType, // full Task type with id
+} from "@/schemas/taskSchema";
 import { useAppStore } from "@/store/appStore";
 import {
   Form,
@@ -23,22 +29,35 @@ import {
   SelectItem,
 } from "@/components/ui/select";
 
-export function TaskForm({ onClose }: { onClose?: () => void }) {
-  const { createTask, colors } = useAppStore();
+type TaskFormProps = {
+  task?: TaskBaseType;
+  onClose?: () => void;
+};
+
+export function TaskForm({ task, onClose }: TaskFormProps) {
+  const { createTask, updateTask, colors } = useAppStore();
 
   const form = useForm<TaskCreateType>({
     resolver: zodResolver(taskCreateSchema),
     defaultValues: {
-      title: "",
-      description: "",
-      color: "",
+      title: task?.title ?? "",
+      description: task?.description ?? "",
+      color: task?.color ?? "",
     },
   });
 
   const onSubmit = (data: TaskCreateType) => {
-    createTask(data);
-    form.reset();
-    if (onClose) onClose();
+    try {
+      if (task) {
+        updateTask(task.id, data); // edit mode
+      } else {
+        createTask(data); // create mode
+      }
+      form.reset();
+      if (onClose) onClose();
+    } catch (error) {
+      console.error("Error submitting task:", error);
+    }
   };
 
   return (
@@ -77,27 +96,37 @@ export function TaskForm({ onClose }: { onClose?: () => void }) {
           name="color"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Color</FormLabel>
+              <FormLabel>Color (Optional)</FormLabel>
               <FormControl>
                 <Select
-                  onValueChange={field.onChange}
-                  defaultValue={field.value}
+                  onValueChange={(value) => {
+                    // Convert "__none__" to empty string
+                    field.onChange(value === "__none__" ? "" : value);
+                  }}
+                  value={field.value || "__none__"}
                 >
                   <SelectTrigger>
-                    <SelectValue placeholder="Pick a color" />
+                    <SelectValue placeholder="Pick a color (optional)" />
                   </SelectTrigger>
                   <SelectContent>
-                    {colors.map((c) => (
-                      <SelectItem key={c.id} value={c.color}>
-                        <div className="flex items-center gap-2">
-                          <span
-                            className="w-4 h-4 rounded-full border"
-                            style={{ backgroundColor: c.color }}
-                          />
-                          {c.color}
-                        </div>
-                      </SelectItem>
-                    ))}
+                    {colors.length > 0 ? (
+                      <>
+                        <SelectItem value="__none__">No color</SelectItem>
+                        {colors.map((c) => (
+                          <SelectItem key={c.id} value={c.color}>
+                            <div className="flex items-center gap-2">
+                              <span
+                                className="w-4 h-4 rounded-full border"
+                                style={{ backgroundColor: c.color }}
+                              />
+                              {c.label}
+                            </div>
+                          </SelectItem>
+                        ))}
+                      </>
+                    ) : (
+                      <SelectItem value="__none__">No color (no colors available)</SelectItem>
+                    )}
                   </SelectContent>
                 </Select>
               </FormControl>
@@ -106,7 +135,7 @@ export function TaskForm({ onClose }: { onClose?: () => void }) {
           )}
         />
 
-        <Button type="submit">Add Task</Button>
+        <Button type="submit">{task ? "Save Changes" : "Add Task"}</Button>
       </form>
     </Form>
   );

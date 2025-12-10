@@ -1,20 +1,65 @@
 "use client";
 
+import { useState } from "react";
 import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Trash2, CirclePlus } from "lucide-react";
 import { ColorDialog } from "./ColorDialog";
+import { DeleteAllColorsDialog } from "./DeleteAllColorsDialog";
+import { useAppStore } from "@/store/appStore";
 
-export function ColorToolBar() {
+type ColorToolBarProps = {
+  searchQuery: string;
+  onSearchChange: (query: string) => void;
+};
+
+export function ColorToolBar({
+  searchQuery,
+  onSearchChange,
+}: ColorToolBarProps) {
+  const [isDeleteAllOpen, setIsDeleteAllOpen] = useState(false);
+  const { colors } = useAppStore();
+
   return (
-    <div className="w-full flex justify-between items-center">
+    <nav className="flex justify-between items-center gap-4 p-4 border-b">
       {/* LEFT TOOL */}
-      <div>
-        <Input type="text" placeholder="Search tasks..." />
+      <div className="flex items-center gap-3">
+        <ColorDialog
+          trigger={
+            <Button variant="outline" size="default" aria-label="add-color">
+              <CirclePlus className="w-4 h-4 mr-2" />
+              Create Color
+            </Button>
+          }
+        />
+
+        <DeleteAllColorsDialog
+          open={isDeleteAllOpen}
+          onOpenChange={setIsDeleteAllOpen}
+        />
+        <Button
+          variant="outline"
+          size="default"
+          aria-label="remove-all-colors"
+          onClick={() => setIsDeleteAllOpen(true)}
+          disabled={colors.length === 0}
+        >
+          <Trash2 className="w-4 h-4 mr-2" />
+          Remove All Colors
+        </Button>
       </div>
 
       {/* RIGHT TOOL */}
-      <div className="flex justify-end items-center gap-3">
-        <ColorDialog />
+      <div className="flex items-center gap-3">
+        <Input
+          type="text"
+          placeholder="Search colors by label..."
+          value={searchQuery}
+          onChange={(e) => onSearchChange(e.target.value)}
+          className="w-full max-w-md"
+        />
       </div>
-    </div>
+    </nav>
   );
 }
+

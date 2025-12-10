@@ -2,7 +2,12 @@
 
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { createColorSchema, CreateColorType } from "@/schemas/colorSchema";
+import {
+  createColorSchema,
+  CreateColorType,
+  ColorBaseType,
+  UpdateColorType,
+} from "@/schemas/colorSchema";
 import { useAppStore } from "@/store/appStore";
 import {
   Form,
@@ -15,18 +20,34 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 
-export function ColorForm({ onClose }: { onClose: () => void }) {
-  const { createColor } = useAppStore();
+type ColorFormProps = {
+  color?: ColorBaseType;
+  onClose?: () => void;
+};
+
+export function ColorForm({ color, onClose }: ColorFormProps) {
+  const { createColor, updateColor } = useAppStore();
 
   const form = useForm<CreateColorType>({
     resolver: zodResolver(createColorSchema),
-    defaultValues: { color: "#000000" },
+    defaultValues: {
+      color: color?.color ?? "#000000",
+      label: color?.label ?? "",
+    },
   });
 
   const onSubmit = (data: CreateColorType) => {
-    createColor(data);
-    onClose();
-    form.reset();
+    try {
+      if (color) {
+        updateColor(color.id, data as UpdateColorType);
+      } else {
+        createColor(data);
+      }
+      form.reset();
+      if (onClose) onClose();
+    } catch (error) {
+      console.error("Error submitting color:", error);
+    }
   };
 
   return (
@@ -34,18 +55,47 @@ export function ColorForm({ onClose }: { onClose: () => void }) {
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
         <FormField
           control={form.control}
-          name="color"
+          name="label"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Pick a Color</FormLabel>
+              <FormLabel>Label</FormLabel>
               <FormControl>
-                <Input type="color" {...field} />
+                <Input placeholder="Enter color label" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
           )}
         />
-        <Button type="submit">Add Color</Button>
+
+        <FormField
+          control={form.control}
+          name="color"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Color</FormLabel>
+              <FormControl>
+                <div className="flex items-center gap-3">
+                  <Input type="color" {...field} className="w-20 h-10" />
+                  <Input
+                    type="text"
+                    value={field.value}
+                    onChange={field.onChange}
+                    placeholder="#000000"
+                    className="flex-1"
+                  />
+                </div>
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <div className="flex justify-end gap-2">
+          <Button type="button" variant="outline" onClick={onClose}>
+            Cancel
+          </Button>
+          <Button type="submit">{color ? "Save Changes" : "Add Color"}</Button>
+        </div>
       </form>
     </Form>
   );

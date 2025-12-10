@@ -21,11 +21,14 @@ type AppState = {
 
   createTask: (data: TaskCreateType) => void;
   updateTask: (id: string, data: TaskUpdateType) => void;
+  updateTaskOrder: (id: string, orderedTasks: TaskBaseType[]) => any;
   deleteTask: (id: string) => void;
+  deleteAllTasks: () => void;
 
   createColor: (data: CreateColorType) => void;
   updateColor: (id: string, data: UpdateColorType) => void;
   deleteColor: (id: string) => void;
+  deleteAllColors: () => void;
 };
 
 export const useAppStore = create<AppState>()(
@@ -37,10 +40,15 @@ export const useAppStore = create<AppState>()(
       createTask: (data) =>
         set((state) => {
           const parsed = taskCreateSchema.parse(data);
+          const notStartedTasks = state.tasks.filter(
+            (t) => t.status === "notStarted"
+          );
           const newTask: TaskBaseType = {
             ...parsed,
             id: crypto.randomUUID(),
             status: "notStarted",
+            order: notStartedTasks.length,
+            color: parsed.color || "",
           };
           return { tasks: [...state.tasks, newTask] };
         }),
@@ -55,9 +63,23 @@ export const useAppStore = create<AppState>()(
           };
         }),
 
+      updateTaskOrder: (columnId: string, orderedTasks: TaskBaseType[]) =>
+        set((state) => {
+          const updated = state.tasks.map((t) => {
+            const found = orderedTasks.find((ot) => ot.id === t.id);
+            return found ? { ...t, order: found.order } : t;
+          });
+          return { tasks: updated };
+        }),
+
       deleteTask: (id) =>
         set((state) => ({
           tasks: state.tasks.filter((t) => t.id !== id),
+        })),
+
+      deleteAllTasks: () =>
+        set(() => ({
+          tasks: [],
         })),
 
       createColor: (data) =>
@@ -83,6 +105,11 @@ export const useAppStore = create<AppState>()(
       deleteColor: (id) =>
         set((state) => ({
           colors: state.colors.filter((c) => c.id !== id),
+        })),
+
+      deleteAllColors: () =>
+        set(() => ({
+          colors: [],
         })),
     }),
     { name: "task-app-storage" }

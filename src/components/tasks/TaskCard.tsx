@@ -1,34 +1,97 @@
 "use client";
 
-import { useDraggable } from "@dnd-kit/core";
+import { useState } from "react";
+import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import type { TaskBaseType } from "@/schemas/taskSchema";
+import { Button } from "../ui/button";
+import { Trash2, Pencil } from "lucide-react";
+import { useAppStore } from "@/store/appStore";
+import TaskDialog from "./TaskDialog";
 
 export default function TaskCard({ task }: { task: TaskBaseType }) {
-  const { attributes, listeners, setNodeRef, transform } = useDraggable({
+  const [isEditing, setIsEditing] = useState(false);
+  const { deleteTask } = useAppStore();
+
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({
     id: task.id,
+    disabled: isEditing,
   });
 
   const style = {
-    transform: CSS.Translate.toString(transform),
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.5 : 1,
+  };
+
+  const handleDelete = () => {
+    deleteTask(task.id);
   };
 
   return (
     <div
       ref={setNodeRef}
-      {...listeners}
-      {...attributes}
       style={style}
-      className="p-3 mb-2 rounded-md shadow-sm cursor-grab bg-white border"
+      className={`p-3 mb-2 rounded-md shadow-sm bg-white border ${
+        isDragging ? "opacity-50" : ""
+      }`}
     >
-      <div className="font-medium">{task.title}</div>
-      {task.description && (
-        <div className="text-sm text-gray-600">{task.description}</div>
-      )}
-      <div
-        className="w-4 h-4 rounded-full mt-2"
-        style={{ backgroundColor: task.color }}
-      />
+      <div className="flex items-start justify-between gap-2">
+        <div 
+          {...listeners} 
+          {...attributes} 
+          className="flex-1 cursor-grab active:cursor-grabbing"
+        >
+          <div className="font-medium">{task.title}</div>
+          {task.description && (
+            <div className="text-sm text-gray-600 mt-1">{task.description}</div>
+          )}
+          {task.color && (
+            <div
+              className="w-4 h-4 rounded-full mt-2 border"
+              style={{ backgroundColor: task.color }}
+            />
+          )}
+        </div>
+
+        <div className="flex items-center gap-1 shrink-0">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => setIsEditing(true)}
+            onPointerDown={(e) => e.stopPropagation()}
+            onMouseDown={(e) => e.stopPropagation()}
+            aria-label="edit"
+            className="cursor-pointer"
+          >
+            <Pencil className="w-4 h-4" />
+          </Button>
+          <TaskDialog
+            task={task}
+            open={isEditing}
+            onOpenChange={setIsEditing}
+          />
+
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={handleDelete}
+            onPointerDown={(e) => e.stopPropagation()}
+            onMouseDown={(e) => e.stopPropagation()}
+            aria-label="delete"
+            className="cursor-pointer"
+          >
+            <Trash2 className="w-4 h-4" />
+          </Button>
+        </div>
+      </div>
     </div>
   );
 }
