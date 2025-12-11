@@ -6,12 +6,12 @@ import { CSS } from "@dnd-kit/utilities";
 import type { TaskBaseType } from "@/schemas/taskSchema";
 import { Button } from "../ui/button";
 import { Trash2, Pencil } from "lucide-react";
-import { useAppStore } from "@/store/appStore";
 import TaskDialog from "./TaskDialog";
+import DeleteTaskDialog from "./DeleteTaskDialog";
 
 export default function TaskCard({ task }: { task: TaskBaseType }) {
   const [isEditing, setIsEditing] = useState(false);
-  const { deleteTask } = useAppStore();
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const {
     attributes,
@@ -31,22 +31,18 @@ export default function TaskCard({ task }: { task: TaskBaseType }) {
     opacity: isDragging ? 0.5 : 1,
   };
 
-  const handleDelete = () => {
-    deleteTask(task.id);
-  };
-
   return (
     <div
       ref={setNodeRef}
       style={style}
-      className={`p-3 mb-2 rounded-md shadow-sm bg-white border ${
+      className={`p-3 mb-2 rounded-md shadow-sm border${
         isDragging ? "opacity-50" : ""
       }`}
     >
       <div className="flex items-start justify-between gap-2">
-        <div 
-          {...listeners} 
-          {...attributes} 
+        <div
+          {...listeners}
+          {...attributes}
           className="flex-1 cursor-grab active:cursor-grabbing"
         >
           <div className="font-medium">{task.title}</div>
@@ -73,16 +69,11 @@ export default function TaskCard({ task }: { task: TaskBaseType }) {
           >
             <Pencil className="w-4 h-4" />
           </Button>
-          <TaskDialog
-            task={task}
-            open={isEditing}
-            onOpenChange={setIsEditing}
-          />
 
           <Button
             variant="ghost"
             size="icon"
-            onClick={handleDelete}
+            onClick={() => setIsDeleting(true)}
             onPointerDown={(e) => e.stopPropagation()}
             onMouseDown={(e) => e.stopPropagation()}
             aria-label="delete"
@@ -90,6 +81,19 @@ export default function TaskCard({ task }: { task: TaskBaseType }) {
           >
             <Trash2 className="w-4 h-4" />
           </Button>
+
+          <TaskDialog
+            task={task}
+            open={isEditing}
+            onOpenChange={setIsEditing}
+          />
+          <DeleteTaskDialog
+            task={task}
+            open={isDeleting}
+            onOpenChange={(open) => {
+              if (!open) setIsDeleting(false);
+            }}
+          />
         </div>
       </div>
     </div>

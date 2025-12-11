@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { useAppStore } from "@/store/appStore";
+import { toast } from "sonner";
 
 type DeleteAllTasksDialogProps = {
   open: boolean;
@@ -24,6 +25,7 @@ export default function DeleteAllTasksDialog({
 
   const handleConfirm = () => {
     deleteAllTasks();
+    toast.success("All tasks have been removed");
     onOpenChange(false);
   };
 
@@ -32,15 +34,18 @@ export default function DeleteAllTasksDialog({
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Delete All Tasks</DialogTitle>
+
           <DialogDescription>
             Are you sure you want to delete all {tasks.length} task(s)? This
             action cannot be undone.
           </DialogDescription>
         </DialogHeader>
+
         <DialogFooter>
           <Button variant="outline" onClick={() => onOpenChange(false)}>
             Cancel
           </Button>
+
           <Button variant="destructive" onClick={handleConfirm}>
             Delete All
           </Button>
@@ -49,4 +54,3 @@ export default function DeleteAllTasksDialog({
     </Dialog>
   );
 }
-

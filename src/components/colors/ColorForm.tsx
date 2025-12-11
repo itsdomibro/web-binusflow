@@ -19,6 +19,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
 
 type ColorFormProps = {
   color?: ColorBaseType;
@@ -40,13 +41,16 @@ export function ColorForm({ color, onClose }: ColorFormProps) {
     try {
       if (color) {
         updateColor(color.id, data as UpdateColorType);
+        toast.success(`Color "${color.label}" has been updated`);
       } else {
         createColor(data);
+        toast.success(`Color "${data.label}" has been created`);
       }
       form.reset();
       if (onClose) onClose();
     } catch (error) {
       console.error("Error submitting color:", error);
+      toast.error("Color has not been created");
     }
   };
 
@@ -74,7 +78,7 @@ export function ColorForm({ color, onClose }: ColorFormProps) {
             <FormItem>
               <FormLabel>Color</FormLabel>
               <FormControl>
-                <div className="flex items-center gap-3">
+                <div className="flex justify-start items-center gap-3">
                   <Input type="color" {...field} className="w-20 h-10" />
                   <Input
                     type="text"
@@ -90,7 +94,7 @@ export function ColorForm({ color, onClose }: ColorFormProps) {
           )}
         />
 
-        <div className="flex justify-end gap-2">
+        <div className="flex justify-end items-center gap-3">
           <Button type="button" variant="outline" onClick={onClose}>
             Cancel
           </Button>

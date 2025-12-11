@@ -11,6 +11,14 @@ import {
 } from "@dnd-kit/core";
 import TaskColumn from "./TaskColumn";
 import { arrayMove } from "@dnd-kit/sortable";
+import {
+  Empty,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+} from "../ui/empty";
+import { BookCheck } from "lucide-react";
 
 export default function TaskBoard() {
   const { tasks, updateTask, updateTaskOrder } = useAppStore();
@@ -119,9 +127,27 @@ export default function TaskBoard() {
     }
   };
 
+  if (tasks.length === 0) {
+    return (
+      <Empty className="mt-30">
+        <EmptyHeader>
+          <EmptyMedia variant="icon">
+            <BookCheck />
+          </EmptyMedia>
+
+          <EmptyTitle>No Tasks Yet</EmptyTitle>
+
+          <EmptyDescription>
+            You haven't created any tasks. Get started by creating your tasks.
+          </EmptyDescription>
+        </EmptyHeader>
+      </Empty>
+    );
+  }
+
   return (
     <DndContext sensors={sensors} onDragEnd={handleDragEnd}>
-      <div className="w-full flex justify-start gap-4 p-4">
+      <div className="w-full flex flex-col md:flex-row gap-4 p-4">
         <TaskColumn id="notStarted" title="Not started" />
         <TaskColumn id="inProgress" title="In progress" />
         <TaskColumn id="toDo" title="Done" />

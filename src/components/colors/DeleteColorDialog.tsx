@@ -10,22 +10,25 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { useAppStore } from "@/store/appStore";
+import { ColorBaseType } from "@/schemas/colorSchema";
 import { toast } from "sonner";
 
-type DeleteAllColorsDialogProps = {
+type DeleteColorDialogProps = {
+  color: ColorBaseType;
   open: boolean;
   onOpenChange: (open: boolean) => void;
 };
 
-export function DeleteAllColorsDialog({
+export function DeleteColorDialog({
+  color,
   open,
   onOpenChange,
-}: DeleteAllColorsDialogProps) {
-  const { deleteAllColors, colors } = useAppStore();
+}: DeleteColorDialogProps) {
+  const { deleteColor } = useAppStore();
 
   const handleConfirm = () => {
-    deleteAllColors();
-    toast.success("All colors have been removed");
+    deleteColor(color.id);
+    toast.success(`Color "${color.label}" has been removed`);
     onOpenChange(false);
   };
 
@@ -33,11 +36,11 @@ export function DeleteAllColorsDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Delete All Colors</DialogTitle>
+          <DialogTitle>Delete Color</DialogTitle>
 
           <DialogDescription>
-            Are you sure you want to delete all {colors.length} color(s)? This
-            action cannot be undone.
+            Are you sure you want to delete "{color.label}" ({color.color})?
+            This action cannot be undone.
           </DialogDescription>
         </DialogHeader>
 
@@ -47,7 +50,7 @@ export function DeleteAllColorsDialog({
           </Button>
 
           <Button variant="destructive" onClick={handleConfirm}>
-            Delete All
+            Delete
           </Button>
         </DialogFooter>
       </DialogContent>

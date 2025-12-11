@@ -3,7 +3,7 @@ import TaskToolBar from "@/components/tasks/TaskToolBar";
 
 export default function TasksPage() {
   return (
-    <div className="border border-black flex flex-col justify-start gap-1">
+    <div className="flex flex-col justify-start gap-1">
       <TaskToolBar />
       <TaskBoard />
     </div>

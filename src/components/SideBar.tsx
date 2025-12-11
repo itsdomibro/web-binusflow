@@ -1,6 +1,6 @@
 "use client";
 
-import { LayoutDashboard, Settings } from "lucide-react";
+import { BookCheck, LayoutDashboard, PaintRoller } from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
@@ -13,18 +13,17 @@ import {
   SidebarMenuItem,
 } from "./ui/sidebar";
 import Link from "next/link";
-import Image from "next/image";
 
 const items = [
   {
     title: "Tasks",
     url: "/",
-    icon: LayoutDashboard,
+    icon: BookCheck,
   },
   {
     title: "Colors",
     url: "/colors",
-    icon: Settings,
+    icon: PaintRoller,
   },
 ];
 
@@ -36,12 +35,7 @@ export default function SideBar() {
           <SidebarMenuItem>
             <SidebarMenuButton asChild>
               <Link href="/">
-                <Image
-                  src="/binus_logo.webp"
-                  alt="logo"
-                  width={20}
-                  height={20}
-                />
+                <LayoutDashboard />
                 <span>Binus Flow</span>
               </Link>
             </SidebarMenuButton>

@@ -5,9 +5,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import {
   taskCreateSchema,
   TaskCreateType,
-  taskBaseSchema,
-  TaskUpdateType,
-  TaskBaseType, // full Task type with id
+  TaskBaseType,
 } from "@/schemas/taskSchema";
 import { useAppStore } from "@/store/appStore";
 import {
@@ -28,6 +26,7 @@ import {
   SelectContent,
   SelectItem,
 } from "@/components/ui/select";
+import { toast } from "sonner";
 
 type TaskFormProps = {
   task?: TaskBaseType;
@@ -49,14 +48,17 @@ export function TaskForm({ task, onClose }: TaskFormProps) {
   const onSubmit = (data: TaskCreateType) => {
     try {
       if (task) {
-        updateTask(task.id, data); // edit mode
+        updateTask(task.id, data);
+        toast.success(`Color "${task.title}" has been updated`);
       } else {
-        createTask(data); // create mode
+        createTask(data);
+        toast.success(`Color "${data.title}" has been updated`);
       }
       form.reset();
       if (onClose) onClose();
     } catch (error) {
       console.error("Error submitting task:", error);
+      toast.error("Task has not been created");
     }
   };
 
@@ -100,7 +102,6 @@ export function TaskForm({ task, onClose }: TaskFormProps) {
               <FormControl>
                 <Select
                   onValueChange={(value) => {
-                    // Convert "__none__" to empty string
                     field.onChange(value === "__none__" ? "" : value);
                   }}
                   value={field.value || "__none__"}
@@ -108,6 +109,7 @@ export function TaskForm({ task, onClose }: TaskFormProps) {
                   <SelectTrigger>
                     <SelectValue placeholder="Pick a color (optional)" />
                   </SelectTrigger>
+
                   <SelectContent>
                     {colors.length > 0 ? (
                       <>
@@ -125,7 +127,9 @@ export function TaskForm({ task, onClose }: TaskFormProps) {
                         ))}
                       </>
                     ) : (
-                      <SelectItem value="__none__">No color (no colors available)</SelectItem>
+                      <SelectItem value="__none__">
+                        No color (no colors available)
+                      </SelectItem>
                     )}
                   </SelectContent>
                 </Select>
@@ -135,7 +139,15 @@ export function TaskForm({ task, onClose }: TaskFormProps) {
           )}
         />
 
-        <Button type="submit">{task ? "Save Changes" : "Add Task"}</Button>
+        <div className="flex justify-end items-center gap-3">
+          {onClose && (
+            <Button type="button" variant="outline" onClick={onClose}>
+              Cancel
+            </Button>
+          )}
+
+          <Button type="submit">{task ? "Save Changes" : "Add Task"}</Button>
+        </div>
       </form>
     </Form>
   );

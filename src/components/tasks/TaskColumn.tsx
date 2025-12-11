@@ -26,11 +26,12 @@ export default function TaskColumn({
   });
 
   return (
-    <div 
-      ref={setNodeRef} 
-      className="flex-1 min-h-[200px] border rounded-md p-4 bg-gray-50"
+    <div
+      ref={setNodeRef}
+      className="flex-1 min-h-[200px] border rounded-md p-4"
     >
       <h3 className="font-semibold mb-2">{title}</h3>
+
       <div className="min-h-[100px]">
         <SortableContext
           items={columnTasks.map((t) => t.id)}

@@ -45,7 +45,9 @@ export default function TaskSearch() {
         onBlur={() => {
           setTimeout(() => setIsOpen(false), 200);
         }}
+        className="w-full md:w-[300px]"
       />
+
       {isOpen && filteredTasks.length > 0 && (
         <div
           className={cn(
@@ -84,6 +86,7 @@ export default function TaskSearch() {
           </div>
         </div>
       )}
+
       {selectedTask && (
         <TaskDialog
           task={selectedTask}

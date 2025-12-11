@@ -29,7 +29,6 @@ export function ColorDialog({
 }: ColorDialogProps) {
   const [internalOpen, setInternalOpen] = useState(false);
   const isControlled = open !== undefined && onOpenChange !== undefined;
-
   const dialogOpen = isControlled ? open : internalOpen;
   const handleOpenChange = isControlled ? onOpenChange! : setInternalOpen;
 
@@ -49,6 +48,7 @@ export function ColorDialog({
       <DialogContent>
         <DialogHeader>
           <DialogTitle>{color ? "Edit Color" : "Create a Color"}</DialogTitle>
+
           <DialogDescription>
             {color
               ? "Update the color details"

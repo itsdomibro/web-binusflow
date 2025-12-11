@@ -8,11 +8,8 @@ export default function ColorsPage() {
   const [searchQuery, setSearchQuery] = useState("");
 
   return (
-    <div className="border border-black flex flex-col justify-start gap-1">
-      <ColorToolBar
-        searchQuery={searchQuery}
-        onSearchChange={setSearchQuery}
-      />
+    <div className="flex flex-col justify-start gap-1">
+      <ColorToolBar searchQuery={searchQuery} onSearchChange={setSearchQuery} />
       <ColorList searchQuery={searchQuery} />
     </div>
   );
