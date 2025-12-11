@@ -52,7 +52,7 @@ Try it here: https://web-binusflow.vercel.app
 
 ### UI Framework
 
-- TailwindCSS – utility-first styling
+- TailwindCSS
 - ShadCN/UI – pre-built components
 
 ---
