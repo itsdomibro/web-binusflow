@@ -19,9 +19,12 @@ import {
   EmptyTitle,
 } from "../ui/empty";
 import { BookCheck } from "lucide-react";
+import { useState } from "react";
+import TaskCelebration from "../TaskCelebration";
 
 export default function TaskBoard() {
   const { tasks, updateTask, updateTaskOrder } = useAppStore();
+  const [celebrate, setCelebrate] = useState(false);
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
@@ -68,6 +71,10 @@ export default function TaskBoard() {
           order: newOrder,
         });
         updateTaskOrder(targetStatus, updatedTargetTasks);
+        if (targetStatus === "toDo") {
+          setCelebrate(true);
+          setTimeout(() => setCelebrate(false), 2000);
+        }
       }
       return;
     }
@@ -152,6 +159,7 @@ export default function TaskBoard() {
         <TaskColumn id="inProgress" title="In progress" />
         <TaskColumn id="toDo" title="Done" />
       </div>
+      <TaskCelebration active={celebrate} />
     </DndContext>
   );
 }
